@@ -1,0 +1,183 @@
+# Background: Car Services Marketplace Application
+
+We are building a cloud-ready microservice-based **Car Services Marketplace**.
+
+## Core Business Idea
+- **Providers (car mechanics)** register their businesses and list services (oil change, tire change, brake repair, etc.).
+- **Customers** search for providers within a 10-mile radius and view details (distance, rating, services, address, photo).
+- **Orders** service manages bookings.
+- **Payments** service handles payment intents and captures.
+- **Gateway** routes and authenticates requests.
+- **Frontend (React)** displays provider grid and integrates booking flow.
+- **Infra**: Postgres + PostGIS, Kafka, Redis, MinIO/S3, Keycloak, OTEL, Prometheus, Grafana, Helm, Terraform.
+
+---
+
+# Where `accounts` fits in
+
+The **accounts service** is the **source of truth for providers and customers**.
+
+- It manages provider registration and updates.
+- It powers the "nearby providers" query that the frontend uses to populate the grid.
+- It emits **provider events** (`ProviderRegistered`, `ProviderUpdated`) that downstream services (Orders, Payments) consume.
+- It persists provider data in **Postgres (with PostGIS)** for geo search.
+- It uses **common-domain** for primitives (GeoPoint, RadiusMi, ServiceTag, ProviderId).
+- It uses **common-messaging** for event schemas and Kafka SerDes.
+
+---
+
+# Purpose of `accounts`
+
+- Provide REST APIs to register, update, and query providers.
+- Provide geo-based nearby search.
+- Store provider data in Postgres with spatial queries.
+- Emit provider lifecycle events to Kafka via outbox pattern.
+- Expose OpenAPI contract, structured error model, and basic validation.
+
+---
+
+# Scope (what belongs here)
+
+**In**
+- REST endpoints for provider registration and geo search.
+- Postgres persistence with PostGIS (location search).
+- Outbox pattern for reliable provider events.
+- OpenAPI 3.1 contract + validation.
+- Unit & integration tests (Testcontainers: Postgres + Kafka).
+- Role-based access control (provider role for writes, public for reads).
+- Seed data for local development.
+
+**Out**
+- Reviews/ratings system (numeric rating field only for now).
+- Availability/scheduling logic (belongs to Orders).
+- Media upload (store photo URL only).
+- Customer profile management (can be added later).
+
+---
+
+# External Interfaces
+
+**REST (via gateway)**
+- `POST /api/accounts/providers` → create/update provider (auth required, provider role).
+- `GET  /api/accounts/providers/{id}` → fetch provider by id (public).
+- `GET  /api/accounts/providers/nearby?lat=&lon=&radiusMi=10&limit=50` → nearby providers (public).
+
+**Events (via Kafka)**
+- Topic: `provider-events`
+  - Event types: `ProviderRegistered`, `ProviderUpdated`
+  - Key: providerId (UUID)
+
+**Database**
+- Table: `providers` with PostGIS point (location), GIST index.
+- Table: `outbox` for reliable event publishing.
+
+---
+
+# How to use shared libs
+
+- Use **common-domain**:
+  - `GeoPoint` for lat/lon.
+  - `RadiusMi` for search radius.
+  - `ServiceTag` for services offered.
+  - `ProviderId` for identity.
+- Use **common-messaging**:
+  - Publish `ProviderRegistered` and `ProviderUpdated` events.
+  - Use provided SerDes for Kafka serialization.
+
+---
+
+# Design Principles
+
+- **Hexagonal architecture**: controllers → application service → domain → adapters (db, messaging).
+- **Fail fast**: validate inputs with common-domain types.
+- **Immutable domain objects** where possible.
+- **Outbox**: ensure at-least-once delivery of events.
+- **Observability**: OTEL traces, Prometheus metrics, structured logs.
+- **Security**: JWT validation (resource server); enforce roles on write endpoints.
+
+---
+
+# Acceptance Criteria
+
+**Functional**
+- Providers can be registered/updated.
+- Providers can be fetched by id.
+- Nearby search returns providers sorted by distance (miles).
+- Default radius = 10 miles; max limit = 200.
+
+**Messaging**
+- Provider events published to `provider-events` topic via outbox.
+- Events validate against `common-messaging` schema.
+
+**Infra**
+- Service builds as a Docker image (distroless base).
+- Runs under local Docker Compose with Postgres, Kafka, Gateway.
+- Health endpoints expose liveness & readiness.
+
+**Quality**
+- OpenAPI 3.1 is valid.
+- Unit tests and integration tests pass.
+- DTO validation errors return HTTP 400 with clear messages.
+
+**Observability**
+- Service emits traces, metrics, and logs with trace IDs.
+
+---
+
+# Delivery Plan (Associate Developer)
+
+**Cycle A: Core API + Persistence**
+1. Write OpenAPI spec (`/providers`, `/providers/{id}`, `/providers/nearby`).
+2. Define DTOs and validation (map to domain primitives).
+3. Implement persistence with PostGIS; add nearby search query.
+4. Add unit tests and integration test (Testcontainers: Postgres).
+5. Seed database with sample providers.
+
+**Cycle B: Events + Outbox + Ops**
+1. Add outbox table + publisher.
+2. Publish `ProviderRegistered`/`ProviderUpdated` events via Kafka.
+3. Wire OTEL, logging, and health endpoints.
+4. Add smoke test script for Compose stack.
+5. Document assumptions and update service README.
+
+---
+
+# Assumptions to Record
+
+- Default radius is 10 miles.
+- Providers can upsert their own profile (auth check is simplified in v1).
+- Ratings are stored as a numeric field but not yet computed from reviews.
+- Photos are URLs (stored in MinIO/S3 later).
+- Nearby search is open/public for discovery.
+
+---
+
+# Risks & Mitigation
+
+- **Geo accuracy**: validate lat/lon, test known coordinates.
+- **Event evolution**: additive changes only, new schema versions for breaking changes.
+- **Performance**: GIST index on location, cap results at 200.
+- **Security**: enforce role checks in controllers + validate JWT.
+
+---
+
+# Documentation to Produce
+
+- **README.md**: build/run/test instructions for accounts service.
+- **ARCHITECTURE.md** section: how accounts fits in overall system.
+- **ASSUMPTIONS.md**: record simplified auth model, radius default, etc.
+- **OpenAPI.yaml**: validated contract checked into repo.
+
+---
+
+# Definition of Done
+
+- All acceptance criteria met.
+- Service compiles, tests pass, and container builds.
+- Service runs in local Compose stack with Gateway & UI hitting `/providers/nearby`.
+- Events validated against schemas and published to Kafka.
+- Docs updated in repo.
+
+---
+
+# End of Instructions
