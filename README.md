@@ -1,95 +1,44 @@
 # Accounts Service
 
-Service for managing providers and customers in the Car Services Marketplace.
+Spring Boot microservice that manages providers for the Car Services Marketplace.
 
 ## Features
 
-- Provider registration and updates
-- Geo-based nearby provider search
-- Provider event publishing (Kafka)
-- OpenAPI 3.1 documentation
-- Role-based access control
-- Observability with OpenTelemetry
+- Register and update providers
+- Fetch provider by id
+- Nearby provider search using PostGIS
+- OpenAPI 3.1 contract (`src/main/resources/openapi.yaml`)
 
 ## Tech Stack
 
-- Java 21 + Spring Boot 3
-- PostgreSQL + PostGIS (geo queries)
-- Kafka (event publishing)
-- OpenAPI 3.1
-- Keycloak (auth)
-- OpenTelemetry
+- Java 17
+- Spring Boot 3
+- Maven build
+- PostgreSQL + PostGIS
+- Kafka (events, not fully implemented)
 
-## Dependencies
+## Building & Testing
 
-- `common-domain`: Core domain primitives
-- `common-messaging`: Event schemas and serialization
-
-## Build & Run
-
-### Prerequisites
-
-- Java 21
-- Docker & Docker Compose
-- PostgreSQL with PostGIS
-- Kafka (or Redpanda)
-- Keycloak
-
-### Local Development
-
-1. Start dependencies:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. Build:
-   ```bash
-   ./mvnw clean install
-   ```
-
-3. Run:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-### API Documentation
-
-OpenAPI UI available at: http://localhost:8081/api/accounts/swagger-ui.html
-
-### Main Endpoints
-
-- `POST /api/accounts/providers` - Register/update provider
-- `GET /api/accounts/providers/{id}` - Get provider by ID
-- `GET /api/accounts/providers/nearby` - Find nearby providers
-
-### Configuration
-
-Key properties in `application.yml`:
-- Database connection
-- Kafka settings
-- Security (JWT)
-- Observability
-
-## Testing
-
-Run tests:
 ```bash
-./mvnw test
+mvn test
 ```
 
-Integration tests use Testcontainers for PostgreSQL and Kafka.
+## Running Locally
 
-## Design
+The application expects a PostgreSQL database. Configure credentials in
+`src/main/resources/application.properties` or via environment variables.
 
-- Hexagonal Architecture
-- Domain-Driven Design
-- Event-Driven (outbox pattern)
-- CQRS (separate read/write models)
+Start the app:
 
-## Event Publishing
+```bash
+mvn spring-boot:run
+```
 
-Events published to Kafka:
-- `ProviderRegistered`
-- `ProviderUpdated`
+## API Endpoints
 
-Uses outbox pattern for reliability.
+- `POST /api/accounts/providers` – register a provider
+- `PUT /api/accounts/providers/{id}` – update a provider
+- `GET /api/accounts/providers/{id}` – fetch provider by id
+- `GET /api/accounts/providers/nearby` – search providers near a location
+
+See `openapi.yaml` for full request/response models.
