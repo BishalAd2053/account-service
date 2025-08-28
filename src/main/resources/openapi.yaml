@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: Account Service API
+  version: 0.1.0
+paths:
+  /api/accounts/providers:
+    post:
+      summary: Register provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+    get:
+      summary: List nearby providers
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: radiusMi
+          in: query
+          schema:
+            type: number
+            default: 10
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderResponse'
+  /api/accounts/providers/{id}:
+    get:
+      summary: Get provider by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+components:
+  schemas:
+    ProviderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        services:
+          type: array
+          items:
+            type: string
+        lat:
+          type: number
+        lon:
+          type: number
+      required:
+        - name
+        - services
+        - lat
+        - lon
+    ProviderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        services:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          format: double
+        lat:
+          type: number
+        lon:
+          type: number
+        distance:
+          type: number
+          description: Distance in miles from search origin
