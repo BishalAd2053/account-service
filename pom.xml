@@ -22,6 +22,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.carmarketplace</groupId>
+            <artifactId>common-domain</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.car.marketplace</groupId>
+            <artifactId>common-messaging</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
