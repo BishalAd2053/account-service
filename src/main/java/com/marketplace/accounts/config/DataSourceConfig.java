@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 import javax.sql.DataSource;
 
@@ -28,7 +32,7 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource dataSource() throws Exception {
-        String secret = CommonUtils.getSecret(secretName, region);
+        String secret = getSecret(secretName, region);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(secret);
@@ -47,5 +51,32 @@ public class DataSourceConfig {
         dataSource.setPassword(password);
         dataSource.setDriverClassName("org.postgresql.Driver");
         return dataSource;
+    }
+    /**
+     * Fetches a secret value from AWS Secrets Manager.
+     *
+     * @param secretName the name of the secret to retrieve
+     * @param region     AWS region where the secret is stored
+     * @return the secret string retrieved from Secrets Manager
+     */
+    public static String getSecret(String secretName, String region) {
+
+        // Create a Secrets Manager client
+        SecretsManagerClient client = SecretsManagerClient.builder()
+                .region(Region.of(region))
+                .build();
+
+        GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder()
+                .secretId(secretName)
+                .build();
+
+        try {
+            GetSecretValueResponse getSecretValueResponse = client.getSecretValue(getSecretValueRequest);
+            return getSecretValueResponse.secretString();
+        } catch (Exception e) {
+            // For a list of exceptions thrown, see
+            // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+            throw new RuntimeException("Unable to retrieve secret from AWS Secrets Manager", e);
+        }
     }
 }
