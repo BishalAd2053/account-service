@@ -27,6 +27,10 @@ mvn test
 
 The application expects a PostgreSQL database. Configure credentials in
 `src/main/resources/application.properties` or via environment variables.
+When running on AWS EC2, the service fetches connection details from AWS
+Secrets Manager. The secret name defaults to `db_connect` and should contain a
+JSON object with the fields `username`, `password`, `host`, `port` and
+`dbname`.
 
 Start the app:
 
