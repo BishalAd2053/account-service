@@ -29,7 +29,7 @@ class ProviderServiceTest {
     void registerSavesProvider() {
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         Provider provider = service.register("Joe's Garage", List.of("oil-change"), 40.0, -70.0);
-        assertThat(provider.getName()).isEqualTo("Joe's Garage");
+        assertThat(provider.getBusinessName()).isEqualTo("Joe's Garage");
         verify(repository).save(any());
     }
 }

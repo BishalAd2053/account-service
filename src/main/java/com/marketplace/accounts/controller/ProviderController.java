@@ -4,7 +4,6 @@ import com.marketplace.accounts.domain.Provider;
 import com.marketplace.accounts.dto.ProviderRequest;
 import com.marketplace.accounts.dto.ProviderResponse;
 import com.marketplace.accounts.service.ProviderService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +15,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/accounts/providers")
-@RequiredArgsConstructor
 public class ProviderController {
 
     private final ProviderService service;
+
+    public ProviderController(ProviderService service) {
+        this.service = service;
+    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -62,15 +65,15 @@ public class ProviderController {
         double lat = p.getLocation() != null ? p.getLocation().getY() : 0;
         double lon = p.getLocation() != null ? p.getLocation().getX() : 0;
         List<String> services = p.getServices() != null ? Arrays.asList(p.getServices().split(",")) : List.of();
-        return ProviderResponse.builder()
-                .id(p.getId())
-                .name(p.getName())
-                .services(services)
-                .rating(p.getRating())
-                .lat(lat)
-                .lon(lon)
-                .distance(distanceMi)
-                .build();
+        ProviderResponse providerResponse = new ProviderResponse();
+        providerResponse.setId(p.getId());
+        providerResponse.setName(p.getBusinessName());
+        providerResponse.setServices(services);
+        providerResponse.setRating(p.getRating());
+        providerResponse.setLat(lat);
+        providerResponse.setLon(lon);
+        providerResponse.setDistance(distanceMi);
+        return providerResponse;
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
