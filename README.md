@@ -1,12 +1,11 @@
 # Accounts Service
 
-Spring Boot microservice that manages providers for the Car Services Marketplace.
+Spring Boot microservice that manages service providers for the Car Services Marketplace.
 
 ## Features
 
 - Register and update providers
 - Fetch provider by id
-- Nearby provider search using PostGIS
 - OpenAPI 3.1 contract (`src/main/resources/openapi.yaml`)
 
 ## Tech Stack
@@ -14,7 +13,7 @@ Spring Boot microservice that manages providers for the Car Services Marketplace
 - Java 17
 - Spring Boot 3
 - Maven build
-- PostgreSQL + PostGIS
+- PostgreSQL + Flyway
 - Kafka (events, not fully implemented)
 
 ## Building & Testing
@@ -43,6 +42,16 @@ mvn spring-boot:run
 - `POST /api/accounts/providers` – register a provider
 - `PUT /api/accounts/providers/{id}` – update a provider
 - `GET /api/accounts/providers/{id}` – fetch provider by id
-- `GET /api/accounts/providers/nearby` – search providers near a location
 
 See `openapi.yaml` for full request/response models.
+
+## Service Provider Persistence
+
+This service uses the shared domain model `com.carmarketplace.common.domain.provider.ServiceProvider`.
+Flyway migration `V2__create_service_provider.sql` creates the backing `service_provider`
+PostgreSQL table, indexes, and triggers. Deployment steps:
+
+1. Apply the migration in staging with Flyway.
+2. Verify CRUD operations against the new table.
+3. Deploy application code referencing the shared domain class.
+4. Repeat the migration in production after backups are confirmed.

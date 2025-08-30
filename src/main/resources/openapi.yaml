@@ -11,46 +11,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProviderRequest'
+              $ref: '#/components/schemas/ServiceProvider'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderResponse'
-    get:
-      summary: List nearby providers
-      parameters:
-        - name: lat
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: lon
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: radiusMi
-          in: query
-          schema:
-            type: number
-            default: 10
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 50
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProviderResponse'
+                $ref: '#/components/schemas/ServiceProvider'
   /api/accounts/providers/{id}:
     get:
       summary: Get provider by id
@@ -67,46 +35,89 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderResponse'
+                $ref: '#/components/schemas/ServiceProvider'
+    put:
+      summary: Update provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceProvider'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceProvider'
 components:
   schemas:
-    ProviderRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        services:
-          type: array
-          items:
-            type: string
-        lat:
-          type: number
-        lon:
-          type: number
-      required:
-        - name
-        - services
-        - lat
-        - lon
-    ProviderResponse:
+    ServiceProvider:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        name:
+        fullName:
           type: string
-        services:
+        businessName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          default: USA
+        profilePictureUrl:
+          type: string
+          format: uri
+        bio:
+          type: string
+        locationType:
+          type: string
+          enum: [WORKSHOP, MOBILE, BOTH]
+        operatingHours:
+          type: object
+          additionalProperties:
+            type: string
+        coverageAreaZipcodes:
           type: array
           items:
             type: string
-        rating:
-          type: number
-          format: double
-        lat:
-          type: number
-        lon:
-          type: number
-        distance:
-          type: number
-          description: Distance in miles from search origin
+        isIdentityVerified:
+          type: boolean
+        isAgreedTerms:
+          type: boolean
+        isActive:
+          type: boolean
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - fullName
+        - locationType
