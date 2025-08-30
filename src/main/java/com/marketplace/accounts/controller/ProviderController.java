@@ -1,5 +1,6 @@
 package com.marketplace.accounts.controller;
 
+import com.carmarketplace.common.domain.provider.ServiceProvider;
 import com.marketplace.accounts.domain.Provider;
 import com.marketplace.accounts.dto.ProviderRequest;
 import com.marketplace.accounts.dto.ProviderResponse;
@@ -26,12 +27,8 @@ public class ProviderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProviderResponse register(@Validated @RequestBody ProviderRequest request) {
-        Provider provider = service.register(
-                request.getName(),
-                request.getServices(),
-                request.getLat(),
-                request.getLon());
+    public ProviderResponse register(@Validated @RequestBody ServiceProvider request) {
+        Provider provider = service.register(request);
         return toResponse(provider, null);
     }
 

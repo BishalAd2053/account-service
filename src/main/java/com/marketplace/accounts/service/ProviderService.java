@@ -1,5 +1,6 @@
 package com.marketplace.accounts.service;
 
+import com.carmarketplace.common.domain.provider.ServiceProvider;
 import com.marketplace.accounts.domain.Provider;
 import com.marketplace.accounts.repository.ProviderRepository;
 import org.locationtech.jts.geom.Coordinate;
@@ -22,13 +23,7 @@ public class ProviderService {
         this.repository = repository;
     }
 
-    public Provider register(String name, List<String> services, double lat, double lon) {
-        Point location = geometryFactory.createPoint(new Coordinate(lon, lat));
-        Provider provider = new Provider();
-        provider.setBusinessName(name);
-        provider.setServices(String.join(",", services));
-        provider.setLocation(location);
-
+    public Provider register(ServiceProvider provider) {
         return repository.save(provider);
     }
 
