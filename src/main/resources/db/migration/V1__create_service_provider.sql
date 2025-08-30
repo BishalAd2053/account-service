@@ -1,9 +1,11 @@
+-- 1. Create schema if not exists
+CREATE SCHEMA IF NOT EXISTS car_marketplace;
 -- Enable required extensions (safe to run once)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- for gen_random_uuid()
 CREATE EXTENSION IF NOT EXISTS citext;     -- for case-insensitive email
 
 -- Core table
-CREATE TABLE IF NOT EXISTS service_provider (
+CREATE TABLE IF NOT EXISTS car_marketplace.service_provider (
   id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
   -- Basic profile
@@ -40,7 +42,7 @@ CREATE TABLE IF NOT EXISTS service_provider (
 );
 
 -- Trigger to keep search_vector updated
-CREATE OR REPLACE FUNCTION service_provider_tsvector_trigger()
+CREATE OR REPLACE FUNCTION car_marketplace.service_provider_tsvector_trigger()
 RETURNS trigger AS $$
 BEGIN
   NEW.search_vector :=
@@ -51,7 +53,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS service_provider_tsv_update ON service_provider;
+DROP TRIGGER IF EXISTS service_provider_tsv_update ON car_marketplace.service_provider;
 CREATE TRIGGER service_provider_tsv_update
 BEFORE INSERT OR UPDATE ON service_provider
 FOR EACH ROW EXECUTE FUNCTION service_provider_tsvector_trigger();
@@ -65,7 +67,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS service_provider_touch_updated_at ON service_provider;
+DROP TRIGGER IF EXISTS service_provider_touch_updated_at ON car_marketplace.service_provider;
 CREATE TRIGGER service_provider_touch_updated_at
 BEFORE UPDATE ON service_provider
 FOR EACH ROW EXECUTE FUNCTION set_updated_at_timestamp();
@@ -85,13 +87,13 @@ END $$;
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_service_provider_search
-  ON service_provider USING GIN (search_vector);
+  ON car_marketplace.service_provider USING GIN (search_vector);
 
 CREATE INDEX IF NOT EXISTS idx_service_provider_phone
-  ON service_provider (phone);
+  ON car_marketplace.service_provider (phone);
 
 CREATE INDEX IF NOT EXISTS idx_service_provider_active
-  ON service_provider (is_active) WHERE is_active = TRUE;
+  ON car_marketplace.service_provider (is_active) WHERE is_active = TRUE;
 
 CREATE INDEX IF NOT EXISTS idx_service_provider_zipcodes
-  ON service_provider USING GIN (coverage_area_zipcodes jsonb_path_ops);
+  ON car_marketplace.service_provider USING GIN (coverage_area_zipcodes jsonb_path_ops);
