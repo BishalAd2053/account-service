@@ -1,6 +1,6 @@
 package com.marketplace.accounts.repository;
 
-import com.carmarketplace.common.domain.provider.ServiceProvider;
+import com.marketplace.accounts.domain.ServiceProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

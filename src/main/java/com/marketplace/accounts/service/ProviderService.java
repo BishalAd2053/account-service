@@ -1,6 +1,6 @@
 package com.marketplace.accounts.service;
 
-import com.carmarketplace.common.domain.provider.ServiceProvider;
+import com.marketplace.accounts.domain.ServiceProvider;
 import com.marketplace.accounts.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
 
