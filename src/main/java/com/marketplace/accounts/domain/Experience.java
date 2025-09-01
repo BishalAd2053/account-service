@@ -1,14 +1,11 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import jakarta.persistence.Embeddable;
-
 import java.util.List;
 
 /**
  * Professional experience information for a provider.
  */
-@Embeddable
 public class Experience {
     private int yearsOfExperience;
     private List<String> portfolioUrls;

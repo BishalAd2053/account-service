@@ -1,14 +1,11 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import jakarta.persistence.Embeddable;
-
 import java.util.Map;
 
 /**
  * Information required for operating within the marketplace.
  */
-@Embeddable
 public class MarketplaceCompliance {
     private Map<String, Object> paymentDetails;
     private boolean agreedTerms;

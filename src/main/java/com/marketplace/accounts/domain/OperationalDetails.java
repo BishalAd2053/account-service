@@ -1,29 +1,24 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import com.carmarketplace.common.domain.provider.LocationType;
-import com.carmarketplace.common.domain.provider.ResponseTime;
-import jakarta.persistence.Embeddable;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * Operational characteristics of a service provider.
  */
-@Embeddable
 public class OperationalDetails {
     private LocationType locationType;
     private String workshopAddress;
     private List<String> coverageArea;
     private Map<String, String> operatingHours;
-    private com.carmarketplace.common.domain.provider.ResponseTime responseTime;
+    private ResponseTime responseTime;
 
     public OperationalDetails(LocationType locationType,
                               String workshopAddress,
                               List<String> coverageArea,
                               Map<String, String> operatingHours,
-                              com.carmarketplace.common.domain.provider.ResponseTime responseTime) {
+                              ResponseTime responseTime) {
         setLocationType(locationType);
         setWorkshopAddress(workshopAddress);
         setCoverageArea(coverageArea);
@@ -67,7 +62,7 @@ public class OperationalDetails {
         this.operatingHours = Map.copyOf(operatingHours);
     }
 
-    public com.carmarketplace.common.domain.provider.ResponseTime getResponseTime() {
+    public ResponseTime getResponseTime() {
         return responseTime;
     }
 
