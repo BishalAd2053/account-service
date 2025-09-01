@@ -1,15 +1,12 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import jakarta.persistence.Embeddable;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
  * A customer review of a service provider.
  */
-@Embeddable
 public class Review {
     private UUID id;
     private UUID customerId;

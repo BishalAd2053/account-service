@@ -1,14 +1,11 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import jakarta.persistence.Embeddable;
-
 import java.util.List;
 
 /**
  * Licensing and compliance information for a business.
  */
-@Embeddable
 public class BusinessDetails {
     private String businessLicense;
     private String insuranceInfo;

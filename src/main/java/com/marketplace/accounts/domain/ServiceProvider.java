@@ -1,21 +1,13 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Aggregate root representing a service provider in the marketplace.
  */
-@Entity
-@Table(name = "service_provider")
 public class ServiceProvider {
-    @Id
     private UUID id;
     private String fullName;
     private String contactPhone;
@@ -23,17 +15,11 @@ public class ServiceProvider {
     private String address;
     private String profilePictureUrl;
     private String bio;
-    @Embedded
     private BusinessDetails businessDetails;
-    @Embedded
     private List<ServiceDetails> services;
-    @Embedded
     private OperationalDetails operationalDetails;
-    @Embedded
     private Experience experience;
-    @Embedded
     private MarketplaceCompliance marketplaceCompliance;
-    @Embedded
     private List<Review> reviews;
 
     public ServiceProvider(UUID id,

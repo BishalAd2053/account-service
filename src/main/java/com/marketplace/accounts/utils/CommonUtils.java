@@ -22,4 +22,16 @@ public class CommonUtils {
     public String toJson(Object value) throws JsonProcessingException {
         return mapper.writeValueAsString(value);
     }
+
+    /**
+     * Converts JSON into the specified type.
+     *
+     * @param json JSON string
+     * @param type class of T
+     * @return deserialized object
+     * @throws JsonProcessingException if deserialization fails
+     */
+    public <T> T fromJson(String json, Class<T> type) throws JsonProcessingException {
+        return mapper.readValue(json, type);
+    }
 }

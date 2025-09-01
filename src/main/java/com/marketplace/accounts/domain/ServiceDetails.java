@@ -1,10 +1,6 @@
 package com.marketplace.accounts.domain;
 
 import com.carmarketplace.common.domain.Guard;
-import com.carmarketplace.common.domain.provider.PriceType;
-import com.carmarketplace.common.domain.provider.ServiceCategory;
-import jakarta.persistence.Embeddable;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -12,10 +8,9 @@ import java.util.UUID;
 /**
  * Information about a specific service offered by a provider.
  */
-@Embeddable
 public class ServiceDetails {
     private UUID id;
-    private com.carmarketplace.common.domain.provider.ServiceCategory category;
+    private ServiceCategory category;
     private String title;
     private String description;
     private PriceType priceType;
@@ -23,7 +18,7 @@ public class ServiceDetails {
     private List<String> specialOffers;
 
     public ServiceDetails(UUID id,
-                          com.carmarketplace.common.domain.provider.ServiceCategory category,
+                          ServiceCategory category,
                           String title,
                           String description,
                           PriceType priceType,
@@ -47,7 +42,7 @@ public class ServiceDetails {
         this.id = id;
     }
 
-    public com.carmarketplace.common.domain.provider.ServiceCategory getCategory() {
+    public ServiceCategory getCategory() {
         return category;
     }
 
